@@ -1,0 +1,8 @@
+{
+  "name": "EAC-Auditor AI",
+  "description": "An AI-powered audit and compliance platform tailored for the East African Community (EAC), featuring regional tax compliance, OCR evidence capture, and continuous monitoring.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
