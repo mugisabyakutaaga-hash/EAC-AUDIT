@@ -9,10 +9,8 @@ import ChatBot from './components/ChatBot';
 import Settings from './components/Settings';
 import AuditorPortal from './components/AuditorPortal';
 import LandingPage from './components/LandingPage';
-// Fixed: Imported missing AuditPhase and ChecklistItem types
 import { Language, Transaction, DefaultCategory, UserRole, Client, EACCountry, ComplianceAlertConfig, AuditPhase, ChecklistItem } from './types';
 
-// Fixed: Explicitly typed INITIAL_WORKFLOW as AuditPhase[] to ensure 'status' matches AuditPhaseStatus literal union
 const INITIAL_WORKFLOW: AuditPhase[] = [
   { id: 'p1', name: 'Planning & Risk Assessment', status: 'completed', deadline: '2025-06-01' },
   { id: 'p2', name: 'Control Testing', status: 'in-progress', deadline: '2025-06-15' },
@@ -20,7 +18,6 @@ const INITIAL_WORKFLOW: AuditPhase[] = [
   { id: 'p4', name: 'Reporting & Opinion', status: 'pending', deadline: '2025-07-15' },
 ];
 
-// Fixed: Explicitly typed INITIAL_CHECKLIST for consistency
 const INITIAL_CHECKLIST: ChecklistItem[] = [
   { id: 'd1', label: 'Review KYC Documents', completed: true },
   { id: 'd2', label: 'Verify Business TIN with Revenue Authority', completed: true },
@@ -52,6 +49,7 @@ const App: React.FC = () => {
   const [language, setLanguage] = useState<Language>('en');
   const [country, setCountry] = useState<EACCountry>(() => (localStorage.getItem('uga_country') as EACCountry) || 'Uganda');
   const [activeClient, setActiveClient] = useState<Client | null>(null);
+  const [isMugisoloFloatingOpen, setIsMugisoloFloatingOpen] = useState(false);
   
   const [clients, setClients] = useState<Client[]>(() => {
     const saved = localStorage.getItem('uga_clients');
@@ -89,6 +87,7 @@ const App: React.FC = () => {
   const handleLogout = () => {
     setIsLoggedIn(false);
     setActiveClient(null);
+    setIsMugisoloFloatingOpen(false);
   };
 
   const handleSelectClient = (client: Client) => {
@@ -133,8 +132,21 @@ const App: React.FC = () => {
       role={role} 
       onLogout={handleLogout} 
       activeClient={activeClient}
+      onToggleMugisolo={() => setIsMugisoloFloatingOpen(!isMugisoloFloatingOpen)}
     >
       {renderContent()}
+
+      {/* mugisolo Floating Chat Overlay */}
+      {isMugisoloFloatingOpen && (
+        <div className="fixed bottom-24 right-6 md:bottom-28 md:right-8 z-[100] w-[calc(100vw-48px)] max-w-sm h-[550px] max-h-[70vh]">
+           <ChatBot 
+             language={language} 
+             country={country} 
+             isFloating={true} 
+             onClose={() => setIsMugisoloFloatingOpen(false)} 
+           />
+        </div>
+      )}
     </Layout>
   );
 };

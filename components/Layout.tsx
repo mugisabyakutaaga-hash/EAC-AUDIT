@@ -11,9 +11,19 @@ interface LayoutProps {
   role: UserRole;
   onLogout: () => void;
   activeClient: Client | null;
+  onToggleMugisolo: () => void;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, language, role, onLogout, activeClient }) => {
+const Layout: React.FC<LayoutProps> = ({ 
+  children, 
+  activeTab, 
+  setActiveTab, 
+  language, 
+  role, 
+  onLogout, 
+  activeClient,
+  onToggleMugisolo
+}) => {
   const t = TRANSLATIONS[language];
 
   const clientNavItems = [
@@ -21,13 +31,13 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, lang
     { id: 'transactions', label: t.transactions, icon: <ICONS.Transactions /> },
     { id: 'tax', label: t.taxCompliance, icon: <ICONS.Tax /> },
     { id: 'audit', label: t.auditAssistant, icon: <ICONS.Audit /> },
-    { id: 'chat', label: 'AI Advisory', icon: <ICONS.Chat /> },
+    { id: 'chat', label: 'mugisolo AI', icon: <ICONS.Chat /> },
     { id: 'settings', label: t.settings, icon: <ICONS.Settings /> },
   ];
 
   const auditorNavItems = [
     { id: 'portfolio', label: t.clientPortfolio, icon: <ICONS.Users /> },
-    { id: 'chat', label: 'AI Co-Pilot', icon: <ICONS.Chat /> },
+    { id: 'chat', label: 'mugisolo AI', icon: <ICONS.Chat /> },
     { id: 'settings', label: t.settings, icon: <ICONS.Settings /> },
   ];
 
@@ -38,7 +48,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, lang
     { id: 'audit', label: t.auditHub, icon: <ICONS.Audit /> },
     { id: 'workflow', label: t.workflow, icon: <ICONS.Clock /> },
     { id: 'diligence', label: t.dueDiligence, icon: <ICONS.Shield /> },
-    { id: 'chat', label: 'AI Advisory', icon: <ICONS.Chat /> },
+    { id: 'chat', label: 'mugisolo AI', icon: <ICONS.Chat /> },
     { id: 'settings', label: t.settings, icon: <ICONS.Settings /> },
   ];
 
@@ -48,7 +58,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, lang
   }
 
   return (
-    <div className="flex flex-col min-h-screen md:flex-row">
+    <div className="flex flex-col min-h-screen md:flex-row relative">
       {/* Sidebar for Desktop */}
       <aside className="hidden md:flex flex-col w-64 bg-slate-900 text-white sticky top-0 h-screen shadow-2xl">
         <div className="p-6 flex items-center space-x-2 border-b border-slate-800">
@@ -60,7 +70,7 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, lang
            <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 mb-6">
               <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Signed In As</p>
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-slate-200 capitalize">{role === 'auditor' && !activeClient ? t.auditorPortal : activeClient ? `Audit: ${activeClient.businessName[0]}.` : t.clientPortal}</span>
+                <span className="text-xs font-semibold text-slate-200 capitalize truncate max-w-[100px]">{role === 'auditor' && !activeClient ? t.auditorPortal : activeClient ? `Audit: ${activeClient.businessName[0]}.` : t.clientPortal}</span>
                 <button 
                   onClick={onLogout}
                   className="text-[10px] font-bold text-red-500 hover:text-red-400 transition"
@@ -125,12 +135,6 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, lang
               <span className="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></span>
               Encrypted Session
             </div>
-            {activeClient && (
-              <button 
-                onClick={onLogout} // Repurpose for exit client hub if needed, but App.tsx handles Exit Session
-                className="hidden" 
-              ></button>
-            )}
           </div>
         </header>
 
@@ -153,6 +157,22 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, setActiveTab, lang
           {children}
         </div>
       </main>
+
+      {/* Floating Mugisolo Trigger */}
+      <div className="fixed bottom-24 right-6 md:bottom-8 md:right-8 z-50">
+         <button 
+           onClick={onToggleMugisolo}
+           className="w-14 h-14 bg-green-600 text-white rounded-2xl shadow-2xl shadow-green-900/40 flex items-center justify-center group hover:bg-green-500 transition-all duration-300 active:scale-90"
+         >
+           <div className="relative">
+              <ICONS.Chat />
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-green-600 animate-pulse"></div>
+           </div>
+           <span className="absolute right-full mr-3 px-3 py-1.5 bg-slate-900 text-white text-[10px] font-black uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap shadow-xl">
+             Ask mugisolo
+           </span>
+         </button>
+      </div>
 
       {/* Bottom Nav for Mobile */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md border-t border-slate-200 flex justify-around p-2 z-20 shadow-[0_-4px_20px_-5px_rgba(0,0,0,0.1)]">
